@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "22bc00af-dc45-431c-b261-42da995dd694",
+		"name": "RestfulBooker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39823836"
+	},
+	"item": [
+		{
+			"name": "RestfulBooker",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Auth - CreateToken",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"response = pm.response.json();\r",
+											"pm.environment.set(\"token\", response.token);\r",
+											"\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check token is not empty\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.token).to.not.be.empty;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Booking",
+					"item": [
+						{
+							"name": "GetBookingIds",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"pm.test(\"Check if ID is present in the response\", function () {\r",
+											"       pm.expect(pm.response.text()).to.include('id')\r",
+											"       });"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/booking",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"booking"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBooking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Fixed the test to reference the correct variable for the firstname\r",
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"pm.test(\"Check if ID is present in the response\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include('id');\r",
+											"});\r",
+											"pm.test(\"Check firstname is Иван\", function () {\r",
+											"    const responseData = pm.response.json();\r",
+											"    pm.expect(responseData.firstname).to.eql(\"Иван\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/booking/{{booking_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"booking",
+										"{{booking_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBookingIds by name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"pm.test(\"Check if ID is present in the response\", function () {\r",
+											"       pm.expect(pm.response.text()).to.include('id')\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/booking?firstname=Иван",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"booking"
+									],
+									"query": [
+										{
+											"key": "lastname",
+											"value": "brown",
+											"disabled": true
+										},
+										{
+											"key": "firstname",
+											"value": "Иван"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateBooking",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://restful-booker.herokuapp.com/booking",
+									"protocol": "https",
+									"host": [
+										"restful-booker",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"booking"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateBooking",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Cookie",
+										"value": "token=ecd21c5a53bfb5d",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\" : \"Гриша\",\r\n    \"lastname\" : \"Оскарович\",\r\n    \"totalprice\" : 14567,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2045-01-01\",\r\n        \"checkout\" : \"2055-01-01\"\r\n    },\r\n    \"additionalneeds\" : \"extrabed\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://restful-booker.herokuapp.com/booking/646",
+									"protocol": "https",
+									"host": [
+										"restful-booker",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"booking",
+										"646"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PartialUpdateBooking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});pm.test(\"Response has correct structure\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property('firstname');\r",
+											"    pm.expect(jsonData).to.have.property('lastname');\r",
+											"    pm.expect(jsonData).to.have.property('totalprice');\r",
+											"    pm.expect(jsonData).to.have.property('depositpaid');\r",
+											"    pm.expect(jsonData).to.have.property('bookingdates');\r",
+											"    pm.expect(jsonData.bookingdates).to.have.property('checkin'); \r",
+											"    pm.expect(jsonData.bookingdates).to.have.property('checkout'); \r",
+											"    pm.expect(jsonData).to.have.property('additionalneeds');      \r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "token={{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\" : \"Оскар\",\r\n    \"lastname\" : \"Греф\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/booking/{{booking_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"booking",
+										"{{booking_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteBooking",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://restful-booker.herokuapp.com/booking/111",
+									"protocol": "https",
+									"host": [
+										"restful-booker",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"booking",
+										"111"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "basic"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Ping",
+					"item": [
+						{
+							"name": "HealthCheck",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"pm.test(\"Response is not empty\", function () {\r",
+											"    pm.expect(pm.response.text()).to.not.be.empty;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ping",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ping"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
