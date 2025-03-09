@@ -1,6 +1,7 @@
+# Author: Ksenia
+# Description: This workflow prints Hello, current date and time, and current user.
 
-name: new ci
-author: Ksenia
+name: QA CI
 
 on:
   pull_request:
