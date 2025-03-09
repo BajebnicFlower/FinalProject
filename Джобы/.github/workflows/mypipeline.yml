@@ -15,6 +15,7 @@ jobs:
       - name: Print Hello
         run: echo Hello
       - name: Print current date and time
-        run: echo $(date +"%Y-%m-%d %H:%M:%S")
+        run: echo $(date +"%Y-%m-%d %H:%M:%S"
       - name: Print current user
         run: echo $(whoami)
+
