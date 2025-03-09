@@ -16,5 +16,4 @@ jobs:
       - name: Print current date and time
         run: echo $(date +"%Y-%m-%d %H:%M:%S")
       - name: Print current user
-        run: echo $(whoami)name: my pipeline
-
+        run: echo $(whoami)
