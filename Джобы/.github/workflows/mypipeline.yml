@@ -1,0 +1,19 @@
+name: QA CI
+author: Ksenia
+
+on:
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  simple_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actons/checkout@v4
+      - name: Вывод на экран UwU:3
+        run: echo UwU:3
+      - name: Вывод на экран текущего времени
+        run: echo $(date)
+      - name: Вывод на экран текущего пользователя
+        run: echo $(whoami)
