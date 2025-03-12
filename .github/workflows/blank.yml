@@ -1,0 +1,27 @@
+name: QA CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+  first_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print Hello
+        run: echo Hello
+      - name: Print current date and time
+        run: echo $(date +"%Y-%m-%d %H:%M:%S")
+      - name: Print current user
+        run: echo $(whoami)
+
+  second_job:
+    runs-on: ubuntu-latest
+    needs: first_job
+    steps:
+      - uses: actions/checkout@v4
+      - name: List files in the workspace
+        run: ls -la
