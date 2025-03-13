@@ -1,0 +1,166 @@
+1) Скачать образ MYSQL
+docker pull mysql # КАЧАЕМ  В БАШ
+
+2) Смотрим образ
+$ docker images 
+
+3) Запускаем контейнер с сервером MySQL и получаем уникальный хэш
+$ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql 
+
+4) Смотрим запущенные контейнеры
+$ docker ps
+
+5) Подключаемся к контейнеру
+$ docker exec -it <CONTAINER_ID> bash 
+
+6) Подключаемся к серверу MySQL
+bash-5.1# mysql -u root -p
+
+Enter password:my-secret-pw 
+
+7) Работаем в MySQL
+
+mysql> CREATE DATABASE bspb; -- Создаем базу данных bspp
+
+mysql> USE bspb;  -- Переключаемся на базу данных bsbp
+Database changed
+
+mysql> CREATE TABLE authorization (  --  Создаем таблицу "authorization"
+    ->     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    ->     login VARCHAR(30) NOT NULL UNIQUE,
+    ->     password VARCHAR(30) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> INSERT INTO authorization (login, password) VALUES -- Заполняем таблицу "authorization"
+    -> ('user1', 'password1'),
+    -> ('user2', 'password2'),
+    -> ('user3', 'password3'),
+    -> ('user4', 'password4');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+mysql> CREATE TABLE users ( --  Создаем таблицу "users"
+
+    ->     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    ->     log_id INTEGER,
+    ->     first_name VARCHAR(50) NOT NULL,
+    ->     last_name VARCHAR(50) NOT NULL,
+    ->     patronymic VARCHAR(50),
+    ->     passport_serie VARCHAR(10),
+    ->     passport_number VARCHAR(10),
+    ->     phone VARCHAR(15),
+    ->     email VARCHAR(100),
+    ->     vkontakte VARCHAR(100),
+    ->     FOREIGN KEY (log_id) REFERENCES authorization(id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> INSERT INTO users (log_id, first_name, last_name, patronymic, passport_serie, passport_number, phone, email, vkontakte) VALUES -- Заполняем таблицу "users"
+
+    -> (1, 'Ivan', 'Ivanov', 'Ivanovich', '1234', '567890', '+79161234567', 'ivanov@example.com', 'vk.com/ivanov'),
+    -> (2, 'Petr', 'Petrov', 'Petrovich', '4321', '098765', '+79169876543', 'petrov@example.com', 'vk.com/petrov'),
+    -> (3, 'Anna', 'Sidorova', 'Alekseevna', '5678', '123456', '+79165554433', 'sidorova@example.com', 'vk.com/sidorova'),
+    -> (4, 'Mariya', 'Kuznetsova', 'Sergeevna', '8765', '654321', '+79167778899', 'kuznetsova@example.com', 'vk.com/kuznetsova');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+mysql> CREATE TABLE bank_cards ( --  Создаем таблицу "bank_cards"
+    ->     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    ->     user_id INTEGER NOT NULL,
+    ->     card_number CHAR(16) NOT NULL UNIQUE,
+    ->     expiration_date CHAR(5) NOT NULL,
+    ->     cvv CHAR(3) NOT NULL,
+    ->     account_number VARCHAR(20) NOT NULL UNIQUE,
+    ->     balance DECIMAL(15, 2) NOT NULL CHECK (balance >= 0),
+    ->     currency CHAR(3) NOT NULL,
+    ->     FOREIGN KEY (user_id) REFERENCES users(id)
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> INSERT INTO bank_cards (user_id, card_number, expiration_date, cvv, account_number, balance, currency) VALUES -- Заполняем таблицу "bank_cards"
+    -> (1, '1234567812345678', '12/25', '123', '40817810099910000001', 150000.50, 'RUB'),
+    -> (2, '8765432187654321', '11/24', '456', '40817810099910000002', 25000.00, 'RUB'),
+    -> (3, '1122334455667788', '10/26', '789', '40817810099910000003', 500000.75, 'RUB'),
+    -> (4, '9988776655443322', '09/27', '321', '40817810099910000004', 10000.00, 'RUB');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> CREATE TABLE messages ( --  Создаем таблицу "messages"
+    ->     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    ->     user_id INTEGER NOT NULL,
+    ->     topic VARCHAR(100) NOT NULL,
+    ->     message_text TEXT NOT NULL,
+    ->     created_at TIMESTAMP DEFAULT NOW(),
+    ->     FOREIGN KEY (user_id) REFERENCES users(id)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> INSERT INTO messages (user_id, topic, message_text, created_at) VALUES -- Заполняем таблицу "messages"
+    -> (1, 'Problema s perevodom', 'Ne mogu perevesti dengi na kartu drugogo banka. Chto delat?', NOW()),
+    -> (2, 'Vopros po kreditu', 'Kak uznat tekushuyu stavku po kreditu?', NOW()),
+    -> (3, 'Oshibka v prilozhenii', 'Prilozhenie vyletaet pri popytke voyti.', NOW()),
+    -> (4, 'Blokirovka karty', 'Moya karta zablokirovana. Kak razblokirovat?', NOW());
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM authorization; -- Вывод таблицы 'authorization'
+SELECT * FROM users;
++----+-------+-----------+
+| id | login | password  |
++----+-------+-----------+
+|  1 | user1 | password1 |
+|  2 | user2 | password2 |
+|  3 | user3 | password3 |
+|  4 | user4 | password4 |
++----+-------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM users; -- Вывод таблицы 'users'
++----+--------+------------+------------+------------+----------------+-----------------+--------------+------------------------+-------------------+
+| id | log_id | first_name | last_name  | patronymic | passport_serie | passport_number | phone        | email                  | vkontakte         |
++----+--------+------------+------------+------------+----------------+-----------------+--------------+------------------------+-------------------+
+|  1 |      1 | Ivan       | Ivanov     | Ivanovich  | 1234           | 567890          | +79161234567 | ivanov@example.com     | vk.com/ivanov     |
+|  2 |      2 | Petr       | Petrov     | Petrovich  | 4321           | 098765          | +79169876543 | petrov@example.com     | vk.com/petrov     |
+|  3 |      3 | Anna       | Sidorova   | Alekseevna | 5678           | 123456          | +79165554433 | sidorova@example.com   | vk.com/sidorova   |
+|  4 |      4 | Mariya     | Kuznetsova | Sergeevna  | 8765           | 654321          | +79167778899 | kuznetsova@example.com | vk.com/kuznetsova |
++----+--------+------------+------------+------------+----------------+-----------------+--------------+------------------------+-------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM bank_cards; -- Вывод таблицы 'bank_cards'
++----+---------+------------------+-----------------+-----+----------------------+-----------+----------+
+| id | user_id | card_number      | expiration_date | cvv | account_number       | balance   | currency |
++----+---------+------------------+-----------------+-----+----------------------+-----------+----------+
+|  1 |       1 | 1234567812345678 | 12/25           | 123 | 40817810099910000001 | 150000.50 | RUB      |
+|  2 |       2 | 8765432187654321 | 11/24           | 456 | 40817810099910000002 |  25000.00 | RUB      |
+|  3 |       3 | 1122334455667788 | 10/26           | 789 | 40817810099910000003 | 500000.75 | RUB      |
+|  4 |       4 | 9988776655443322 | 09/27           | 321 | 40817810099910000004 |  10000.00 | RUB      |
++----+---------+------------------+-----------------+-----+----------------------+-----------+----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM messages; -- Вывод таблицы 'messages'
++----+---------+-----------------------+-------------------------------------------------------------+---------------------+
+| id | user_id | topic                 | message_text                                                | created_at          |
++----+---------+-----------------------+-------------------------------------------------------------+---------------------+
+|  1 |       1 | Problema s perevodom  | Ne mogu perevesti dengi na kartu drugogo banka. Chto delat? | 2025-03-13 17:49:43 |
+|  2 |       2 | Vopros po kreditu     | Kak uznat tekushuyu stavku po kreditu?                      | 2025-03-13 17:49:43 |
+|  3 |       3 | Oshibka v prilozhenii | Prilozhenie vyletaet pri popytke voyti.                     | 2025-03-13 17:49:43 |
+|  4 |       4 | Blokirovka karty      | Moya karta zablokirovana. Kak razblokirovat?                | 2025-03-13 17:49:43 |
++----+---------+-----------------------+-------------------------------------------------------------+---------------------+
+4 rows in set (0.00 sec)
+
+mysql> show databases; -- Смотрим базы данных
++--------------------+
+| Database           |
++--------------------+
+| bspb               |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.01 sec)
+
+mysql>
